@@ -165,7 +165,7 @@ class Game {
     getRandomDigit(limit) {
         return Math.floor(Math.random() * limit);
     }
-   
+
     async activateColorButton(button, amount) {
         this.playAudio(button.value);
         await this.highlightButton(button, amount);
@@ -218,16 +218,21 @@ class Game {
 
     updateUI() {
         if (this.isCorrect) {
-            return this.stateTextElement.innerHTML = 'Good';
+            this.updateInnerHtml(this.stateTextElement, 'Good');
+            return;
         }
 
-        if (!this.isGameOver) {
-            this.startButtonElement.innerHTML = 'Restart';
-            return this.stateTextElement.innerHTML = this.isPlayersTurn ? 'Repeat' : 'Listen';
+        if (this.isGameOver) {
+            this.updateInnerHtml(this.stateTextElement, 'Game over');
+            this.updateInnerHtml(this.startButtonElement, 'Try again');
         } else {
-            this.startButtonElement.innerHTML = 'Try again';
-            return this.stateTextElement.innerHTML = 'Game over';
+            this.updateInnerHtml(this.stateTextElement, this.isPlayersTurn ? 'Repeat' : 'Listen');
+            this.updateInnerHtml(this.startButtonElement, 'Restart');
         }
+    }
+
+    updateInnerHtml(element, value) {
+        element.innerHTML = value;
     }
 
     async checkLength() {
@@ -260,8 +265,8 @@ class Game {
     timeout(amount) {
         return new Promise(resolve => {
             this.activeTimeout = setTimeout(() => {
-                resolve();
                 this.activeTimeout = null;
+                resolve();
             }, amount);
         });
     }
